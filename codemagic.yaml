@@ -1,0 +1,19 @@
+workflows:
+  bhakti-reels-android:
+    name: Bhakti Reels Android APK
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+    scripts:
+      - name: Generate Android project files
+        script: |
+          flutter create --platforms=android --project-name bhakti_reels .
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Build debug APK for phone testing
+        script: |
+          flutter build apk --debug
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
