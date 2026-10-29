@@ -17,7 +17,7 @@ class BhaktiReelsApp extends StatelessWidget {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: saffron,
+          seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
