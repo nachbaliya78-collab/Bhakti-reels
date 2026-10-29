@@ -238,7 +238,7 @@ class _ReelsHomeState extends State<ReelsHome> {
                 if (index == 0) {
                   setState(() => selectedCategory = 'सभी');
                 } else if (index == 1) {
-                  Navigator.Push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => const
