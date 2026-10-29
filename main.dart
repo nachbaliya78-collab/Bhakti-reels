@@ -237,14 +237,14 @@ class _ReelsHomeState extends State<ReelsHome> {
                 setState(() => navIndex = index);
                 if (index == 0) {
                   setState(() => selectedCategory = 'सभी');
-                } else if (index == 1) {
-                  Navigator.Push(
+                     } else if (index == 1) {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
+             MaterialPageRoute(
                       builder: (_) => const
                       ExplorePage(),
                           ),
-                        ),
+                        );
                 } else if (index == 2) {
                   showMessage('Video upload ke liye Firebase setup next step hai.');
                 } else if (index == 3) {
