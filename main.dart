@@ -235,32 +235,53 @@ class _ReelsHomeState extends State<ReelsHome> {
               selectedIndex: navIndex,
               onDestinationSelected: (index) {
                 setState(() => navIndex = index);
+
                 if (index == 0) {
                   setState(() => selectedCategory = 'सभी');
-                     } else if (index == 1) {
+                } else if (index == 1) {
                   Navigator.push(
                     context,
-             MaterialPageRoute(
-                      builder: (_) => const
-                      ExplorePage(),
-                          ),
-                        );
+                    MaterialPageRoute(
+                      builder: (_) => const ExplorePage(),
+                    ),
+                  );
                 } else if (index == 2) {
-                  showMessage('Video upload ke liye Firebase setup next step hai.');
+                  showMessage(
+                    'Video upload ke liye Firebase setup next step hai.',
+                  );
                 } else if (index == 3) {
-                  showMessage('Abhi ${saved.length} reel(s) save ki hain.');
+                  showMessage(
+                    'Abhi ${saved.length} reel(s) save ki hain.',
+                  );
                 } else {
-                  showMessage('Profile/login feature next version mein aayega.');
+                  showMessage(
+                    'Profile/login feature next version mein aayega.',
+                  );
                 }
               },
               backgroundColor: Colors.black.withValues(alpha: 0.92),
               indicatorColor: const Color(0xFF4B2A12),
               destinations: const [
-                NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-                NavigationDestination(icon: Icon(Icons.search), label: 'Explore'),
-                NavigationDestination(icon: Icon(Icons.add_box_outlined), label: 'Upload'),
-                NavigationDestination(icon: Icon(Icons.bookmark_border), label: 'Saved'),
-                NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profile'),
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: 'Explore',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.add_box_outlined),
+                  label: 'Upload',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.bookmark_border),
+                  label: 'Saved',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline),
+                  label: 'Profile',
+                ),
               ],
             ),
           ),
