@@ -1,14 +1,20 @@
-name: Generate Android Folder
+name: Build Bhakti Reels APK
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  generate:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -18,8 +24,22 @@ jobs:
       - name: Generate Android platform
         run: flutter create --platforms=android .
 
-      - name: Upload Android folder
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Commit Android files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add android/
+          git diff --cached --quiet || git commit -m "Generate Android platform"
+          git push
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: bhakti-reels-android
-          path: android/
+          name: bhakti-reels-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
