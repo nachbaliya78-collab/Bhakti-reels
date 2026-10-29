@@ -238,7 +238,14 @@ class _ReelsHomeState extends State<ReelsHome> {
                 if (index == 0) {
                   setState(() => selectedCategory = 'सभी');
                 } else if (index == 1) {
-                  showMessage('Explore: upar se Bhagwan ki category chuno.');
+                  Navigator.Push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const
+                      ExplorePage(),
+                          ),
+                        ),
+                }
                 } else if (index == 2) {
                   showMessage('Video upload ke liye Firebase setup next step hai.');
                 } else if (index == 3) {
