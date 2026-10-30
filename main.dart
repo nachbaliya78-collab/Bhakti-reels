@@ -1,634 +1,224 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'explore_page.dart';
 
 void main() {
-  runApp(const BhaktiReelsApp());
+  runApp(const BhaktiReels());
 }
 
-const saffron = Color(0xFFFF982E);
-
-class BhaktiReelsApp extends StatelessWidget {
-  const BhaktiReelsApp({super.key});
+class BhaktiReels extends StatelessWidget {
+  const BhaktiReels({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bhakti Reels',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      home: const ReelsHome(),
+      title: 'Bhakti Reels',
+      theme: ThemeData.dark(),
+      home: const ReelsPage(),
     );
   }
 }
 
-class ReelData {
-  const ReelData({
-    required this.category,
-    required this.title,
-    required this.handle,
-    required this.emoji,
-    required this.mantra,
-    required this.colors,
-  });
-
-  final String category;
-  final String title;
-  final String handle;
-  final String emoji;
-  final String mantra;
-  final List<Color> colors;
-}
-
-const reels = <ReelData>[
-  ReelData(
-    category: 'Radha Krishna',
-    title: 'राधे राधे बोल, मन को शांति मिले 🙏',
-    handle: '@daily_bhakti',
-    emoji: '🦚',
-    mantra: 'राधे राधे • जय श्री कृष्ण',
-    colors: [
-      Color(0xFF5E8AB5),
-      Color(0xFF202C52),
-      Color(0xFF090A14),
-    ],
-  ),
-  ReelData(
-    category: 'Mahadev',
-    title: 'भोलेनाथ सबका कल्याण करें 🔱',
-    handle: '@shiv_bhakt',
-    emoji: '🔱',
-    mantra: 'ॐ नमः शिवाय',
-    colors: [
-      Color(0xFF4B879C),
-      Color(0xFF19354B),
-      Color(0xFF070C14),
-    ],
-  ),
-  ReelData(
-    category: 'Shri Ram',
-    title: 'जहाँ राम का नाम है, वहाँ विश्वास है 🙏',
-    handle: '@ram_naam',
-    emoji: '🏹',
-    mantra: 'जय श्री राम',
-    colors: [
-      Color(0xFFFFB94F),
-      Color(0xFF8D4727),
-      Color(0xFF170D12),
-    ],
-  ),
-  ReelData(
-    category: 'Hanuman Ji',
-    title: 'जय बजरंगबली 🚩',
-    handle: '@hanuman_bhakt',
-    emoji: '🚩',
-    mantra: 'जय हनुमान',
-    colors: [
-      Color(0xFFFFB84A),
-      Color(0xFF9E421A),
-      Color(0xFF180907),
-    ],
-  ),
-  ReelData(
-    category: 'Mata Rani',
-    title: 'माता रानी की कृपा सब पर बनी रहे 🌺',
-    handle: '@mata_rani',
-    emoji: '🌺',
-    mantra: 'जय माता दी',
-    colors: [
-      Color(0xFFFFA6A0),
-      Color(0xFF8F2344),
-      Color(0xFF180711),
-    ],
-  ),
-];
-
-class ReelsHome extends StatefulWidget {
-  const ReelsHome({super.key});
+class ReelsPage extends StatefulWidget {
+  const ReelsPage({super.key});
 
   @override
-  State<ReelsHome> createState() => _ReelsHomeState();
+  State<ReelsPage> createState() => _ReelsPageState();
 }
 
-class _ReelsHomeState extends State<ReelsHome> {
+class _ReelsPageState extends State<ReelsPage> {
+  final PageController controller = PageController();
+  int currentIndex = 0;
+
+  final List<Map<String, String>> videos = [
+    {
+      'title': 'Premanand Maharaj Ji',
+      'caption': 'राधा नाम की महिमा 🙏',
+      'type': 'प्रवचन और सत्संग',
+    },
+    {
+      'title': 'Premanand Maharaj Ji',
+      'caption': 'जीवन में भक्ति का महत्व ❤️',
+      'type': 'आध्यात्मिक विचार',
+    },
+    {
+      'title': 'Radha Krishna Bhakti',
+      'caption': 'राधे राधे 🌸',
+      'type': 'राधा कृष्ण भक्ति',
+    },
+    {
+      'title': 'Premanand Maharaj Ji',
+      'caption': 'मन को शांत कैसे रखें?',
+      'type': 'प्रवचन और सत्संग',
+    },
+  ];
+
   final Set<int> liked = {};
-  final Set<int> saved = {};
-
-  String selectedCategory = 'सभी';
-  int navIndex = 0;
-  bool isOpeningExplore = false;
-
-  List<int> get visibleIndices {
-    if (selectedCategory == 'सभी') {
-      return List.generate(reels.length, (i) => i);
-    }
-
-    return [
-      for (var i = 0; i < reels.length; i++)
-        if (reels[i].category == selectedCategory) i,
-    ];
-  }
-
-  void showMessage(String message) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-  }
-
-  Future<void> shareReel(ReelData reel) async {
-    final shareText =
-        'Bhakti Reels 🙏\n${reel.title}\n${reel.mantra}\n\nBhakti Reels app';
-
-    await Clipboard.setData(ClipboardData(text: shareText));
-
-    if (mounted) {
-      showMessage(
-        'Share text copy ho gaya. Ise message mein paste kar sakte ho.',
-      );
-    }
-  }
-
-  Future<void> openExplore() async {
-    if (isOpeningExplore) return;
-
-    isOpeningExplore = true;
-
-    try {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const ExplorePage(),
-        ),
-      );
-    } finally {
-      isOpeningExplore = false;
-    }
-  }
-
-  void onNavigationSelected(int index) {
-    if (index == 0) {
-      setState(() {
-        navIndex = 0;
-        selectedCategory = 'सभी';
-      });
-    } else if (index == 1) {
-      openExplore();
-    } else if (index == 2) {
-      showMessage(
-        'Video upload ke liye Firebase setup next step hai.',
-      );
-    } else if (index == 3) {
-      showMessage(
-        'Abhi ${saved.length} reel(s) save ki hain.',
-      );
-    } else {
-      showMessage(
-        'Profile/login feature next version mein aayega.',
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final indices = visibleIndices;
-
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           PageView.builder(
-            key: ValueKey(selectedCategory),
+            controller: controller,
             scrollDirection: Axis.vertical,
-            itemCount: indices.length,
-            itemBuilder: (context, pageIndex) {
-              final reelIndex = indices[pageIndex];
-              final reel = reels[reelIndex];
+            itemCount: videos.length,
+            onPageChanged: (index) {
+              setState(() => currentIndex = index);
+            },
+            itemBuilder: (context, index) {
+              final video = videos[index];
 
-              return ReelPage(
-                reel: reel,
-                isLiked: liked.contains(reelIndex),
-                isSaved: saved.contains(reelIndex),
-                onLike: () {
-                  setState(() {
-                    if (!liked.add(reelIndex)) {
-                      liked.remove(reelIndex);
-                    }
-                  });
-                },
-                onSave: () {
-                  setState(() {
-                    if (!saved.add(reelIndex)) {
-                      saved.remove(reelIndex);
-                    }
-                  });
-                },
-                onShare: () => shareReel(reel),
-                onComment: () => showMessage(
-                  'Comments agle version mein backend ke saath add honge.',
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF302016),
+                      Color(0xFF111111),
+                      Color(0xFF000000),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.play_circle_fill,
+                      size: 85,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      video['type']!,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        color: Colors.orangeAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'भक्ति और सत्संग',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      '🙏 राधे राधे 🙏',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ],
                 ),
               );
             },
           ),
 
           SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: const [
+                  Text(
+                    'Bhakti Reels',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacer(),
+                  Icon(Icons.search, size: 28),
+                ],
+              ),
+            ),
+          ),
+
+          Positioned(
+            right: 12,
+            bottom: 115,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(text: '🪔 Bhakti '),
-                                  TextSpan(
-                                    text: 'Reels',
-                                    style: TextStyle(color: saffron),
-                                  ),
-                                ],
-                              ),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            Text(
-                              'BHAKTI MEIN SHAKTI',
-                              style: TextStyle(
-                                fontSize: 9,
-                                letterSpacing: 2,
-                                color: Color(0xFFFFD9B0),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: () => showMessage(
-                          'Video upload ke liye Firebase Storage aur login setup karna hoga.',
-                        ),
-                        icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Upload'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white54),
-                        ),
-                      ),
-                    ],
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (liked.contains(currentIndex)) {
+                        liked.remove(currentIndex);
+                      } else {
+                        liked.add(currentIndex);
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    liked.contains(currentIndex)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: liked.contains(currentIndex)
+                        ? Colors.red
+                        : Colors.white,
+                    size: 34,
                   ),
                 ),
+                const Text('Like'),
+                const SizedBox(height: 18),
+                const Icon(Icons.comment, size: 32),
+                const Text('Comment'),
+                const SizedBox(height: 18),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.share, size: 32),
+                ),
+                const Text('Share'),
+              ],
+            ),
+          ),
 
-                SizedBox(
-                  height: 40,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _category('✨ Sabhi', 'सभी'),
-                      _category('🦚 Krishna', 'Radha Krishna'),
-                      _category('🔱 Mahadev', 'Mahadev'),
-                      _category('🏹 Shri Ram', 'Shri Ram'),
-                      _category('🚩 Hanuman', 'Hanuman Ji'),
-                      _category('🌺 Mata Rani', 'Mata Rani'),
-                    ],
+          Positioned(
+            left: 16,
+            bottom: 100,
+            right: 90,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  videos[currentIndex]['title']!,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  videos[currentIndex]['caption']!,
+                  style: const TextStyle(fontSize: 15),
                 ),
               ],
             ),
           ),
 
-        Positioned(
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: NavigationBar(
-              selectedIndex: navIndex,
-              onDestinationSelected: (index) {
-                if (index == 1) {
-                  setState(() {
-                    navIndex = 0;
-                  });
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ExplorePage(),
-                    ),
-                  );
-                  return;
-                }
-
-                setState(() {
-                  navIndex = index;
-                });
-
-                if (index == 0) {
-                  setState(() {
-                    selectedCategory = 'सभी';
-                  });
-                } else if (index == 2) {
-                  showMessage(
-                    'Video upload ke liye Firebase setup next step hai.',
-                  );
-                } else if (index == 3) {
-                  showMessage(
-                    'Abhi ${saved.length} reel(s) save ki hain.',
-                  );
-                } else if (index == 4) {
-                  showMessage(
-                    'Profile/login feature next version mein aayega.',
-                  );
-                }
-              },
-              backgroundColor: Colors.black.withValues(alpha: 0.92),
-              indicatorColor: const Color(0xFF4B2A12),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.search),
-                  label: 'Explore',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.add_box_outlined),
-                  label: 'Upload',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.bookmark_border),
-                  label: 'Saved',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person_outline),
-                  label: 'Profile',
-                ),
-              ],
+            child: Container(
+              color: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Icon(Icons.home, size: 27),
+                  Icon(Icons.video_library, size: 27),
+                  Icon(Icons.add_circle_outline, size: 32),
+                  Icon(Icons.favorite_border, size: 27),
+                  Icon(Icons.person_outline, size: 27),
+                ],
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _category(String label, String value) {
-    final active = selectedCategory == value;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: active,
-        onSelected: (_) {
-          setState(() {
-            selectedCategory = value;
-            navIndex = 0;
-          });
-        },
-        selectedColor: saffron,
-        backgroundColor: Colors.black54,
-        labelStyle: TextStyle(
-          color: active ? Colors.black : Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
-        ),
-        side: BorderSide(
-          color: active ? saffron : Colors.white30,
-        ),
-        showCheckmark: false,
-      ),
-    );
-  }
-}
-
-class ReelPage extends StatelessWidget {
-  const ReelPage({
-    super.key,
-    required this.reel,
-    required this.isLiked,
-    required this.isSaved,
-    required this.onLike,
-    required this.onSave,
-    required this.onShare,
-    required this.onComment,
-  });
-
-  final ReelData reel;
-  final bool isLiked;
-  final bool isSaved;
-  final VoidCallback onLike;
-  final VoidCallback onSave;
-  final VoidCallback onShare;
-  final VoidCallback onComment;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: reel.colors,
-            ),
-          ),
-        ),
-
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.27,
-          left: 0,
-          right: 0,
-          child: Column(
-            children: [
-              Container(
-                width: 245,
-                height: 245,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0x66FFE0A3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: saffron.withValues(alpha: 0.16),
-                      blurRadius: 65,
-                      spreadRadius: 15,
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  reel.emoji,
-                  style: const TextStyle(fontSize: 105),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                reel.mantra,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFFFFE3B0),
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0x66000000),
-                Colors.transparent,
-                Color(0xD9000000),
-              ],
-              stops: [0, 0.38, 1],
-            ),
-          ),
-        ),
-
-        Positioned(
-          left: 16,
-          right: 78,
-          bottom: 105,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '🙏 ${reel.category.toUpperCase()}',
-                style: const TextStyle(
-                  color: Color(0xFFFFCF85),
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.4,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                reel.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                reel.handle,
-                style: const TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '♫ Bhakti audio — demo screen',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white70,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Positioned(
-          right: 12,
-          bottom: 118,
-          child: Column(
-            children: [
-              _ActionButton(
-                icon: isLiked
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                label: isLiked ? 'Liked' : 'Like',
-                color: isLiked ? Colors.pinkAccent : Colors.white,
-                onTap: onLike,
-              ),
-              const SizedBox(height: 18),
-              _ActionButton(
-                icon: Icons.mode_comment_outlined,
-                label: 'Comment',
-                onTap: onComment,
-              ),
-              const SizedBox(height: 18),
-              _ActionButton(
-                icon: Icons.send_outlined,
-                label: 'Share',
-                onTap: onShare,
-              ),
-              const SizedBox(height: 18),
-              _ActionButton(
-                icon: isSaved
-                    ? Icons.bookmark
-                    : Icons.bookmark_border,
-                label: isSaved ? 'Saved' : 'Save',
-                color: isSaved
-                    ? const Color(0xFFFFD27A)
-                    : Colors.white,
-                onTap: onSave,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color = Colors.white,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 58,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          child: Column(
-            children: [
-              Icon(icon, size: 29, color: color),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 10),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
