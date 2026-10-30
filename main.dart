@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'explore_page.dart';
 
-void main() => runApp(const BhaktiReelsApp());
+void main() {
+  runApp(const BhaktiReelsApp());
+}
 
 const saffron = Color(0xFFFF982E);
 
@@ -53,7 +55,11 @@ const reels = <ReelData>[
     handle: '@daily_bhakti',
     emoji: '🦚',
     mantra: 'राधे राधे • जय श्री कृष्ण',
-    colors: [Color(0xFF5E8AB5), Color(0xFF202C52), Color(0xFF090A14)],
+    colors: [
+      Color(0xFF5E8AB5),
+      Color(0xFF202C52),
+      Color(0xFF090A14),
+    ],
   ),
   ReelData(
     category: 'Mahadev',
@@ -61,7 +67,11 @@ const reels = <ReelData>[
     handle: '@shiv_bhakt',
     emoji: '🔱',
     mantra: 'ॐ नमः शिवाय',
-    colors: [Color(0xFF4B879C), Color(0xFF19354B), Color(0xFF070C14)],
+    colors: [
+      Color(0xFF4B879C),
+      Color(0xFF19354B),
+      Color(0xFF070C14),
+    ],
   ),
   ReelData(
     category: 'Shri Ram',
@@ -69,7 +79,11 @@ const reels = <ReelData>[
     handle: '@ram_naam',
     emoji: '🏹',
     mantra: 'जय श्री राम',
-    colors: [Color(0xFFFFB94F), Color(0xFF8D4727), Color(0xFF170D12)],
+    colors: [
+      Color(0xFFFFB94F),
+      Color(0xFF8D4727),
+      Color(0xFF170D12),
+    ],
   ),
   ReelData(
     category: 'Hanuman Ji',
@@ -77,7 +91,11 @@ const reels = <ReelData>[
     handle: '@hanuman_bhakt',
     emoji: '🚩',
     mantra: 'जय हनुमान',
-    colors: [Color(0xFFFFB84A), Color(0xFF9E421A), Color(0xFF180907)],
+    colors: [
+      Color(0xFFFFB84A),
+      Color(0xFF9E421A),
+      Color(0xFF180907),
+    ],
   ),
   ReelData(
     category: 'Mata Rani',
@@ -85,7 +103,11 @@ const reels = <ReelData>[
     handle: '@mata_rani',
     emoji: '🌺',
     mantra: 'जय माता दी',
-    colors: [Color(0xFFFFA6A0), Color(0xFF8F2344), Color(0xFF180711)],
+    colors: [
+      Color(0xFFFFA6A0),
+      Color(0xFF8F2344),
+      Color(0xFF180711),
+    ],
   ),
 ];
 
@@ -102,6 +124,7 @@ class _ReelsHomeState extends State<ReelsHome> {
 
   String selectedCategory = 'सभी';
   int navIndex = 0;
+  bool isOpeningExplore = false;
 
   List<int> get visibleIndices {
     if (selectedCategory == 'सभी') {
@@ -133,7 +156,49 @@ class _ReelsHomeState extends State<ReelsHome> {
     await Clipboard.setData(ClipboardData(text: shareText));
 
     if (mounted) {
-      showMessage('Share text copy ho gaya. Ise message mein paste kar sakte ho.');
+      showMessage(
+        'Share text copy ho gaya. Ise message mein paste kar sakte ho.',
+      );
+    }
+  }
+
+  Future<void> openExplore() async {
+    if (isOpeningExplore) return;
+
+    isOpeningExplore = true;
+
+    try {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const ExplorePage(),
+        ),
+      );
+    } finally {
+      isOpeningExplore = false;
+    }
+  }
+
+  void onNavigationSelected(int index) {
+    if (index == 0) {
+      setState(() {
+        navIndex = 0;
+        selectedCategory = 'सभी';
+      });
+    } else if (index == 1) {
+      openExplore();
+    } else if (index == 2) {
+      showMessage(
+        'Video upload ke liye Firebase setup next step hai.',
+      );
+    } else if (index == 3) {
+      showMessage(
+        'Abhi ${saved.length} reel(s) save ki hain.',
+      );
+    } else {
+      showMessage(
+        'Profile/login feature next version mein aayega.',
+      );
     }
   }
 
@@ -156,12 +221,20 @@ class _ReelsHomeState extends State<ReelsHome> {
                 reel: reel,
                 isLiked: liked.contains(reelIndex),
                 isSaved: saved.contains(reelIndex),
-                onLike: () => setState(() {
-                  if (!liked.add(reelIndex)) liked.remove(reelIndex);
-                }),
-                onSave: () => setState(() {
-                  if (!saved.add(reelIndex)) saved.remove(reelIndex);
-                }),
+                onLike: () {
+                  setState(() {
+                    if (!liked.add(reelIndex)) {
+                      liked.remove(reelIndex);
+                    }
+                  });
+                },
+                onSave: () {
+                  setState(() {
+                    if (!saved.add(reelIndex)) {
+                      saved.remove(reelIndex);
+                    }
+                  });
+                },
                 onShare: () => shareReel(reel),
                 onComment: () => showMessage(
                   'Comments agle version mein backend ke saath add honge.',
@@ -248,36 +321,7 @@ class _ReelsHomeState extends State<ReelsHome> {
             right: 0,
             child: NavigationBar(
               selectedIndex: navIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  navIndex = index;
-                });
-
-                if (index == 0) {
-                  setState(() {
-                    selectedCategory = 'सभी';
-                  });
-                } else if (index == 1) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ExplorePage(),
-                    ),
-                  );
-                } else if (index == 2) {
-                  showMessage(
-                    'Video upload ke liye Firebase setup next step hai.',
-                  );
-                } else if (index == 3) {
-                  showMessage(
-                    'Abhi ${saved.length} reel(s) save ki hain.',
-                  );
-                } else {
-                  showMessage(
-                    'Profile/login feature next version mein aayega.',
-                  );
-                }
-              },
+              onDestinationSelected: onNavigationSelected,
               backgroundColor: Colors.black.withValues(alpha: 0.92),
               indicatorColor: const Color(0xFF4B2A12),
               destinations: const [
@@ -317,10 +361,12 @@ class _ReelsHomeState extends State<ReelsHome> {
       child: ChoiceChip(
         label: Text(label),
         selected: active,
-        onSelected: (_) => setState(() {
-          selectedCategory = value;
-          navIndex = 0;
-        }),
+        onSelected: (_) {
+          setState(() {
+            selectedCategory = value;
+            navIndex = 0;
+          });
+        },
         selectedColor: saffron,
         backgroundColor: Colors.black54,
         labelStyle: TextStyle(
@@ -328,7 +374,9 @@ class _ReelsHomeState extends State<ReelsHome> {
           fontWeight: FontWeight.w700,
           fontSize: 12,
         ),
-        side: BorderSide(color: active ? saffron : Colors.white30),
+        side: BorderSide(
+          color: active ? saffron : Colors.white30,
+        ),
         showCheckmark: false,
       ),
     );
@@ -381,7 +429,9 @@ class ReelPage extends StatelessWidget {
                 height: 245,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0x66FFE0A3)),
+                  border: Border.all(
+                    color: const Color(0x66FFE0A3),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: saffron.withValues(alpha: 0.16),
@@ -457,7 +507,10 @@ class ReelPage extends StatelessWidget {
               const SizedBox(height: 8),
               const Text(
                 '♫ Bhakti audio — demo screen',
-                style: TextStyle(fontSize: 12, color: Colors.white70),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                ),
               ),
             ],
           ),
@@ -469,7 +522,9 @@ class ReelPage extends StatelessWidget {
           child: Column(
             children: [
               _ActionButton(
-                icon: isLiked ? Icons.favorite : Icons.favorite_border,
+                icon: isLiked
+                    ? Icons.favorite
+                    : Icons.favorite_border,
                 label: isLiked ? 'Liked' : 'Like',
                 color: isLiked ? Colors.pinkAccent : Colors.white,
                 onTap: onLike,
@@ -488,9 +543,13 @@ class ReelPage extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               _ActionButton(
-                icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+                icon: isSaved
+                    ? Icons.bookmark
+                    : Icons.bookmark_border,
                 label: isSaved ? 'Saved' : 'Save',
-                color: isSaved ? const Color(0xFFFFD27A) : Colors.white,
+                color: isSaved
+                    ? const Color(0xFFFFD27A)
+                    : Colors.white,
                 onTap: onSave,
               ),
             ],
