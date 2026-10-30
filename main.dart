@@ -99,6 +99,7 @@ class ReelsHome extends StatefulWidget {
 class _ReelsHomeState extends State<ReelsHome> {
   final Set<int> liked = {};
   final Set<int> saved = {};
+
   String selectedCategory = 'सभी';
   int navIndex = 0;
 
@@ -106,6 +107,7 @@ class _ReelsHomeState extends State<ReelsHome> {
     if (selectedCategory == 'सभी') {
       return List.generate(reels.length, (i) => i);
     }
+
     return [
       for (var i = 0; i < reels.length; i++)
         if (reels[i].category == selectedCategory) i,
@@ -115,23 +117,30 @@ class _ReelsHomeState extends State<ReelsHome> {
   void showMessage(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
   }
 
   Future<void> shareReel(ReelData reel) async {
     final shareText =
         'Bhakti Reels 🙏\n${reel.title}\n${reel.mantra}\n\nBhakti Reels app';
+
     await Clipboard.setData(ClipboardData(text: shareText));
-    if (mounted) showMessage('Share text copy ho gaya. Ise message mein paste kar sakte ho.');
+
+    if (mounted) {
+      showMessage('Share text copy ho gaya. Ise message mein paste kar sakte ho.');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final indices = visibleIndices;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -142,6 +151,7 @@ class _ReelsHomeState extends State<ReelsHome> {
             itemBuilder: (context, pageIndex) {
               final reelIndex = indices[pageIndex];
               final reel = reels[reelIndex];
+
               return ReelPage(
                 reel: reel,
                 isLiked: liked.contains(reelIndex),
@@ -159,6 +169,7 @@ class _ReelsHomeState extends State<ReelsHome> {
               );
             },
           ),
+
           SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -172,13 +183,15 @@ class _ReelsHomeState extends State<ReelsHome> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text.rich(
-                              TextSpan(children: [
-                                TextSpan(text: '🪔 Bhakti '),
-                                TextSpan(
-                                  text: 'Reels',
-                                  style: TextStyle(color: saffron),
-                                ),
-                              ]),
+                              TextSpan(
+                                children: [
+                                  TextSpan(text: '🪔 Bhakti '),
+                                  TextSpan(
+                                    text: 'Reels',
+                                    style: TextStyle(color: saffron),
+                                  ),
+                                ],
+                              ),
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w900,
@@ -209,6 +222,7 @@ class _ReelsHomeState extends State<ReelsHome> {
                     ],
                   ),
                 ),
+
                 SizedBox(
                   height: 40,
                   child: ListView(
@@ -227,6 +241,7 @@ class _ReelsHomeState extends State<ReelsHome> {
               ],
             ),
           ),
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -234,10 +249,14 @@ class _ReelsHomeState extends State<ReelsHome> {
             child: NavigationBar(
               selectedIndex: navIndex,
               onDestinationSelected: (index) {
-                setState(() => navIndex = index);
+                setState(() {
+                  navIndex = index;
+                });
 
                 if (index == 0) {
-                  setState(() => selectedCategory = 'सभी');
+                  setState(() {
+                    selectedCategory = 'सभी';
+                  });
                 } else if (index == 1) {
                   Navigator.push(
                     context,
@@ -292,6 +311,7 @@ class _ReelsHomeState extends State<ReelsHome> {
 
   Widget _category(String label, String value) {
     final active = selectedCategory == value;
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
@@ -349,6 +369,7 @@ class ReelPage extends StatelessWidget {
             ),
           ),
         ),
+
         Positioned(
           top: MediaQuery.of(context).size.height * 0.27,
           left: 0,
@@ -370,7 +391,10 @@ class ReelPage extends StatelessWidget {
                   ],
                 ),
                 alignment: Alignment.center,
-                child: Text(reel.emoji, style: const TextStyle(fontSize: 105)),
+                child: Text(
+                  reel.emoji,
+                  style: const TextStyle(fontSize: 105),
+                ),
               ),
               const SizedBox(height: 24),
               Text(
@@ -386,16 +410,22 @@ class ReelPage extends StatelessWidget {
             ],
           ),
         ),
+
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0x66000000), Colors.transparent, Color(0xD9000000)],
+              colors: [
+                Color(0x66000000),
+                Colors.transparent,
+                Color(0xD9000000),
+              ],
               stops: [0, 0.38, 1],
             ),
           ),
         ),
+
         Positioned(
           left: 16,
           right: 78,
@@ -414,10 +444,16 @@ class ReelPage extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 reel.title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 5),
-              Text(reel.handle, style: const TextStyle(color: Colors.white70)),
+              Text(
+                reel.handle,
+                style: const TextStyle(color: Colors.white70),
+              ),
               const SizedBox(height: 8),
               const Text(
                 '♫ Bhakti audio — demo screen',
@@ -426,6 +462,7 @@ class ReelPage extends StatelessWidget {
             ],
           ),
         ),
+
         Positioned(
           right: 12,
           bottom: 118,
@@ -490,7 +527,10 @@ class _ActionButton extends StatelessWidget {
             children: [
               Icon(icon, size: 29, color: color),
               const SizedBox(height: 4),
-              Text(label, style: const TextStyle(fontSize: 10)),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 10),
+              ),
             ],
           ),
         ),
