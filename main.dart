@@ -315,13 +315,49 @@ class _ReelsHomeState extends State<ReelsHome> {
             ),
           ),
 
-          Positioned(
+        Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: NavigationBar(
               selectedIndex: navIndex,
-              onDestinationSelected: onNavigationSelected,
+              onDestinationSelected: (index) {
+                if (index == 1) {
+                  setState(() {
+                    navIndex = 0;
+                  });
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ExplorePage(),
+                    ),
+                  );
+                  return;
+                }
+
+                setState(() {
+                  navIndex = index;
+                });
+
+                if (index == 0) {
+                  setState(() {
+                    selectedCategory = 'सभी';
+                  });
+                } else if (index == 2) {
+                  showMessage(
+                    'Video upload ke liye Firebase setup next step hai.',
+                  );
+                } else if (index == 3) {
+                  showMessage(
+                    'Abhi ${saved.length} reel(s) save ki hain.',
+                  );
+                } else if (index == 4) {
+                  showMessage(
+                    'Profile/login feature next version mein aayega.',
+                  );
+                }
+              },
               backgroundColor: Colors.black.withValues(alpha: 0.92),
               indicatorColor: const Color(0xFF4B2A12),
               destinations: const [
