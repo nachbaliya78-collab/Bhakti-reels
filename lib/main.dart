@@ -66,41 +66,48 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
-          return ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final video = items[index];
-              final snippet = video['snippet'];
-              final videoId = video['id']['videoId'];
-              final title = snippet['title'];
-              final channel = snippet['channelTitle'];
-              final thumbnail =
-                  snippet['thumbnails']['high']['url'];
+          return return PageView.builder(
+  scrollDirection: Axis.vertical,
+  itemCount: items.length,
+  itemBuilder: (context, index) {
+    final video = items[index];
+    final videoId = video['id']['videoId'];
+    final snippet = video['snippet'];
 
-              return Card(
-                margin: const EdgeInsets.all(10),
-                child: ListTile(
-                  leading: Image.network(
-                    thumbnail,
-                    width: 110,
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(title),
-                  subtitle: Text(channel),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => VideoPage(
-                          videoId: videoId,
-                        ),
-                      ),
-                    );
-                  },
+    return Container(
+      color: Colors.black,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(
+            snippet['thumbnails']['high']['url'],
+            height: 250,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            snippet['title'],
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18),
+          ),
+          Text(snippet['channelTitle']),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VideoPage(videoId: videoId),
                 ),
               );
             },
-          );
+            child: const Text('Play Video'),
+          ),
+        ],
+      ),
+    );
+  },
+);
         },
       ),
     );
