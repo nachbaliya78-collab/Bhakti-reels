@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class YouTubeService {
   static const String apiKey =
-    String.fromEnvironment('YOUTUBE_API_KEY');
+    String.fromEnvironment('AIzaSyBOuqsJGUSWF6eHqaWoC6Bs-QZM8jEVV3Y');
 
   Future<List<dynamic>> getVideos(String query) async {
     final url = Uri.https(
