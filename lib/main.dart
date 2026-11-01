@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
-          return return PageView.builder(
+          return PageView.builder(
   scrollDirection: Axis.vertical,
   itemCount: items.length,
   itemBuilder: (context, index) {
