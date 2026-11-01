@@ -27,7 +27,7 @@ class YouTubeService {
       return data['items'] ?? [];
     }
 
-    throw Exception('AIzaSyBOuqsJGUSWF6eHqaWoC6Bs-QZM8jEVV3Y: ${response.statusCode}');
+    throw Exception('AIzaSyBOuqsJGUSWF6eHqaWoC6Bs-QZM8jEVV3Y: ${response.statusCode} - ${response.body}');
   }
 
   Future<List<dynamic>> getAllBhaktiVideos() async {
