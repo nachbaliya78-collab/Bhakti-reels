@@ -8,7 +8,7 @@ class YouTubeService {
   Future<List<dynamic>> getVideos(String query) async {
 
     if(apiKey.isEmpty) {
-       throw Exception('YOUTUBE_API_KEY EMPTY);
+       throw Exception('YOUTUBE_API_KEY EMPTY');
        }
     final url = Uri.https(
       'www.googleapis.com',
