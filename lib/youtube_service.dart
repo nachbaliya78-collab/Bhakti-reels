@@ -6,6 +6,10 @@ class YouTubeService {
     String.fromEnvironment('AIzaSyAUyUQNx4TMP39KObrbbApJ_NlIsOlGbIg');
 
   Future<List<dynamic>> getVideos(String query) async {
+
+    if(apiKey.isEmpty) {
+       throw Exception('YOUTUBE_API_KEY EMPTY);
+       }
     final url = Uri.https(
       'www.googleapis.com',
       '/youtube/v3/search',
