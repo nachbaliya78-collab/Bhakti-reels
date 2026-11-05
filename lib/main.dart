@@ -14,7 +14,7 @@ class BhaktiReelsApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Bhakti Reels',
-      theme: ThemeData.dark(),
+      theme: ThemeData.white(),
       home: const HomePage(),
     );
   }
